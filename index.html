@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Işık Taşı: Kan Bağının Sonu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="game-container">
+
+    <!-- Arka plan katmanları -->
+    <div id="bg-overlay"></div>
+    <div id="particles-container"></div>
+    <div id="fog-layer"></div>
+
+    <!-- ANA MENÜ EKRANI -->
+    <div id="screen-menu" class="screen active">
+      <div class="menu-content">
+        <div class="title-block">
+          <span class="title-sub">— Bir Kahraman Destanı —</span>
+          <h1 class="game-title">IŞIK TAŞI</h1>
+          <h2 class="game-subtitle">KAN BAĞININ SONU</h2>
+          <div class="title-divider"></div>
+        </div>
+
+        <nav class="menu-nav">
+          <button class="menu-btn primary" id="btn-start">
+            <span class="btn-icon">⚔</span>
+            <span>Maceraya Başla</span>
+          </button>
+          <button class="menu-btn" id="btn-how-to-play">
+            <span class="btn-icon">📜</span>
+            <span>Nasıl Oynanır?</span>
+          </button>
+          <button class="menu-btn" id="btn-credits">
+            <span class="btn-icon">✦</span>
+            <span>Hakkında</span>
+          </button>
+        </nav>
+
+        <div class="menu-lives-display">
+          <span class="lives-label">Başlangıç Canı:</span>
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NASIL OYNANIR EKRANI -->
+    <div id="screen-howto" class="screen">
+      <div class="modal-box">
+        <h2 class="modal-title">Nasıl Oynanır?</h2>
+        <div class="modal-body">
+          <p>Hikaye boyunca <strong>yol ayrımlarında</strong> kararlar vereceksin.</p>
+          <p><span class="game-heart alive">♥♥♥</span> — <strong>3 canın</strong> var. Yanlış seçimler can kaybettirir.</p>
+          <p>Tüm canlarını kaybedersen oyun biter. Doğru seçimler seni hayatta tutar.</p>
+          <p>Her bölüm farklı bir atmosferde geçer; arka planlar ve müzik sahneye göre değişir.</p>
+          <p class="tip">💡 <em>Her kararın arkasında bir bedel vardır. Dikkatli oku.</em></p>
+        </div>
+        <button class="menu-btn" id="btn-howto-back">← Geri Dön</button>
+      </div>
+    </div>
+
+    <!-- HAKKINDA EKRANI -->
+    <div id="screen-credits" class="screen">
+      <div class="modal-box">
+        <h2 class="modal-title">Hakkında</h2>
+        <div class="modal-body credits-body">
+          <p><strong>Işık Taşı: Kan Bağının Sonu</strong></p>
+          <p>Bitirme Projesi — 2026</p>
+          <div class="divider-sm"></div>
+          <p>Metin macera oyunu</p>
+          <p>HTML · CSS · JavaScript</p>
+          <div class="divider-sm"></div>
+          <p class="quote">"Kan bağı, ihaneti temizlemez."</p>
+        </div>
+        <button class="menu-btn" id="btn-credits-back">← Geri Dön</button>
+      </div>
+    </div>
+
+    <!-- OYUN EKRANI -->
+    <div id="screen-game" class="screen">
+      <div id="game-inner" class="game-inner">
+        <header id="game-header">
+          <div id="game-chapter-label">BÖLÜM I — Karanlığın Kalbine Yolculuk</div>
+          <div id="game-lives"></div>
+        </header>
+        <div id="game-scroll-area">
+          <div id="game-content">
+            <div id="game-scene-title"></div>
+            <div id="game-narration"></div>
+            <div id="game-choices"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /game-container -->
+
+  <script src="main.js"></script>
+  <script src="story.js"></script>
+</body>
+</html>

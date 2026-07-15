@@ -1,0 +1,787 @@
+/* ===========================
+   TEMEL AYARLAR
+   =========================== */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-dark:      #0a0612;
+  --bg-mid:       #120820;
+  --purple-deep:  #1a0533;
+  --gold:         #c9a227;
+  --gold-light:   #f0d060;
+  --gold-dim:     #7a5f10;
+  --cream:        #e8d5b7;
+  --cream-dim:    #a08060;
+  --red-blood:    #8b0000;
+  --red-bright:   #cc2222;
+  --white:        #ffffff;
+  --transition:   0.4s ease;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+/* ===========================
+   OYUN KAPSAYICISI
+   =========================== */
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Crimson Text', Georgia, serif;
+  color: var(--cream);
+}
+
+/* ===========================
+   ARKA PLAN KATMANLARI
+   =========================== */
+#bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(80, 10, 120, 0.35) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 0, 0, 0.20) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(26, 5, 51, 0.8) 0%, transparent 70%),
+    linear-gradient(180deg, #0a0612 0%, #120820 50%, #0d0418 100%);
+  z-index: 0;
+  animation: bgPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  0%   { opacity: 0.9; }
+  100% { opacity: 1; filter: brightness(1.08); }
+}
+
+/* Sis efekti */
+#fog-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 40% at 50% 110%, rgba(40,10,80,0.5) 0%, transparent 70%);
+  animation: fogDrift 12s ease-in-out infinite alternate;
+}
+
+@keyframes fogDrift {
+  0%   { transform: translateX(-3%) scaleY(1); }
+  100% { transform: translateX(3%) scaleY(1.1); }
+}
+
+/* Partiküller */
+#particles-container {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-110vh) translateX(var(--drift)); opacity: 0; }
+}
+
+/* ===========================
+   EKRANLAR
+   =========================== */
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ===========================
+   ANA MENÜ İÇERİĞİ
+   =========================== */
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Başlık bloğu */
+.title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.title-sub {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--cream-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.game-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  color: var(--gold-light);
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 0 20px rgba(201,162,39,0.9),
+    0 0 60px rgba(201,162,39,0.4),
+    0 0 120px rgba(201,162,39,0.15),
+    2px 2px 4px rgba(0,0,0,0.8);
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  0%   { text-shadow: 0 0 20px rgba(201,162,39,0.9), 0 0 60px rgba(201,162,39,0.4), 2px 2px 4px rgba(0,0,0,0.8); }
+  100% { text-shadow: 0 0 30px rgba(240,208,96,1),   0 0 90px rgba(240,208,96,0.6), 0 0 140px rgba(201,162,39,0.2), 2px 2px 4px rgba(0,0,0,0.8); }
+}
+
+.game-subtitle {
+  font-family: 'Cinzel', serif;
+  font-weight: 400;
+  font-size: clamp(0.9rem, 2.5vw, 1.35rem);
+  color: var(--gold);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(201,162,39,0.5);
+}
+
+.title-divider {
+  margin-top: 0.8rem;
+  width: 180px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* ===========================
+   MENÜ BUTONLARI
+   =========================== */
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.85rem 2rem;
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.35);
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 3px;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), box-shadow var(--transition), transform 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(201,162,39,0.1) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.menu-btn:hover {
+  background: rgba(201,162,39,0.15);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 0 20px rgba(201,162,39,0.25), inset 0 0 15px rgba(201,162,39,0.05);
+  transform: translateY(-2px);
+}
+
+.menu-btn:hover::before { opacity: 1; }
+
+.menu-btn:active { transform: translateY(0) scale(0.98); }
+
+.menu-btn.primary {
+  border-color: var(--gold);
+  background: rgba(201,162,39,0.12);
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 0 15px rgba(201,162,39,0.15);
+}
+
+.menu-btn.primary:hover {
+  background: rgba(201,162,39,0.25);
+  box-shadow: 0 0 30px rgba(201,162,39,0.4);
+}
+
+.btn-icon {
+  font-size: 1.1em;
+  opacity: 0.85;
+}
+
+/* ===========================
+   CAN GÖSTERGESİ (MENÜ)
+   =========================== */
+.menu-lives-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  color: var(--cream-dim);
+}
+
+.heart {
+  color: var(--red-bright);
+  font-size: 1.2rem;
+  text-shadow: 0 0 8px rgba(204,34,34,0.7);
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.heart:nth-child(3) { animation-delay: 0.15s; }
+.heart:nth-child(4) { animation-delay: 0.30s; }
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15%       { transform: scale(1.2); }
+  30%       { transform: scale(1); }
+}
+
+/* ===========================
+   MODAL KUTULARI (Nasıl Oynanır / Hakkında)
+   =========================== */
+.modal-box {
+  background: linear-gradient(160deg, rgba(26,5,51,0.97) 0%, rgba(10,6,18,0.98) 100%);
+  border: 1px solid rgba(201,162,39,0.4);
+  border-radius: 6px;
+  padding: 2.5rem 3rem;
+  max-width: 480px;
+  width: 90%;
+  box-shadow:
+    0 0 40px rgba(201,162,39,0.1),
+    0 20px 60px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: var(--gold-light);
+  text-shadow: 0 0 15px rgba(201,162,39,0.5);
+  letter-spacing: 0.1em;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  color: var(--cream);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.modal-body strong { color: var(--gold-light); }
+
+.tip {
+  margin-top: 0.4rem;
+  font-style: italic;
+  color: var(--cream-dim);
+  font-size: 0.95rem;
+}
+
+.quote {
+  font-style: italic;
+  color: var(--gold-dim);
+  font-size: 1rem;
+  margin-top: 0.3rem;
+}
+
+.divider-sm {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin: 0.3rem auto;
+}
+
+.credits-body p { font-size: 1rem; }
+
+/* ===========================
+   EKRAN GEÇİŞ ANİMASYONU
+   =========================== */
+.screen.fade-out {
+  animation: fadeOut 0.35s ease forwards;
+}
+.screen.fade-in {
+  animation: fadeIn 0.45s ease forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; pointer-events: none; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 480px) {
+  .modal-box { padding: 2rem 1.5rem; }
+  .menu-nav  { max-width: 280px; }
+}
+
+/* ===========================
+   OYUN EKRANI
+   =========================== */
+#screen-game {
+  display: block; /* flex'i override et — game-inner dolduracak */
+}
+
+.game-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.8s ease;
+}
+
+/* Arka plan temaları */
+.ch-bg-village {
+  background:
+    linear-gradient(180deg, rgba(10, 6, 18, 0.75) 0%, rgba(10, 6, 18, 0.88) 100%),
+    url('assets/bg_village.png') no-repeat center center/cover;
+}
+
+.ch-bg-forest {
+  background:
+    linear-gradient(180deg, rgba(8, 6, 15, 0.78) 0%, rgba(8, 6, 15, 0.90) 100%),
+    url('assets/bg_forest.png') no-repeat center center/cover;
+}
+
+.ch-bg-mountain {
+  background:
+    linear-gradient(180deg, rgba(10, 8, 20, 0.75) 0%, rgba(10, 8, 20, 0.88) 100%),
+    url('assets/bg_mountain.png') no-repeat center center/cover;
+}
+
+.ch-bg-dark-forest {
+  background:
+    linear-gradient(180deg, rgba(12, 6, 20, 0.78) 0%, rgba(12, 6, 20, 0.90) 100%),
+    url('assets/bg_dark_forest.png') no-repeat center center/cover;
+}
+
+.ch-bg-castle {
+  background:
+    linear-gradient(180deg, rgba(10, 4, 15, 0.75) 0%, rgba(10, 4, 15, 0.88) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-dawn {
+  background:
+    linear-gradient(180deg, rgba(15, 8, 25, 0.70) 0%, rgba(15, 8, 25, 0.85) 100%),
+    url('assets/bg_dawn.png') no-repeat center center/cover;
+}
+
+/* YENİ ARKA PLANLAR (Mevcut Görseller + CSS Efektleri) */
+.ch-bg-village-light {
+  background:
+    radial-gradient(circle at center, rgba(201,162,39,0.3) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(10, 6, 18, 0.5) 0%, rgba(10, 6, 18, 0.7) 100%),
+    url('assets/bg_village.png') no-repeat center center/cover;
+}
+
+.ch-bg-village-raid {
+  background:
+    radial-gradient(circle at 30% 80%, rgba(204,34,34,0.4) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(20, 5, 5, 0.75) 0%, rgba(10, 2, 2, 0.88) 100%),
+    url('assets/bg_village.png') no-repeat center center/cover;
+  filter: saturate(1.2) contrast(1.1);
+}
+
+.ch-bg-kingdom-diplomacy {
+  background:
+    linear-gradient(180deg, rgba(26, 5, 51, 0.8) 0%, rgba(10, 6, 18, 0.9) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-interrogation {
+  background:
+    radial-gradient(circle at center, rgba(240,208,96,0.15) 0%, transparent 40%),
+    radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+}
+
+.ch-bg-dungeon {
+  background:
+    linear-gradient(180deg, rgba(5, 10, 20, 0.85) 0%, rgba(2, 4, 8, 0.95) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+  filter: grayscale(0.5);
+}
+
+.ch-bg-exile-mist {
+  background:
+    linear-gradient(180deg, rgba(30, 30, 40, 0.8) 0%, rgba(15, 15, 20, 0.92) 100%),
+    url('assets/bg_dark_forest.png') no-repeat center center/cover;
+  filter: contrast(0.8) brightness(0.8);
+}
+
+.ch-bg-palace-raid {
+  background:
+    radial-gradient(circle at 10% 90%, rgba(230, 80, 0, 0.4) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(20, 4, 4, 0.8) 0%, rgba(10, 2, 2, 0.9) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-palace-maze {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(201,162,39,0.08) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(8, 4, 15, 0.88) 0%, rgba(5, 2, 10, 0.96) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-throne-duel {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(0, 150, 255, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(10, 4, 20, 0.75) 0%, rgba(5, 2, 10, 0.9) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-sealed-dungeon {
+  background:
+    radial-gradient(circle at center, rgba(130, 0, 255, 0.15) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(5, 2, 15, 0.9) 0%, rgba(2, 1, 8, 0.98) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+.ch-bg-lonely-throne {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(5, 3, 10, 0.85) 0%, rgba(2, 1, 5, 0.97) 100%),
+    url('assets/bg_castle.png') no-repeat center center/cover;
+}
+
+/* ===========================
+   OYUN EKRANI — HEADER
+   =========================== */
+#game-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 54px;
+  border-bottom: 1px solid rgba(201,162,39,0.18);
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+#game-chapter-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.22em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+}
+
+#game-lives {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.game-heart {
+  font-size: 1.3rem;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+  user-select: none;
+}
+
+.game-heart.alive {
+  color: var(--red-bright);
+  text-shadow: 0 0 8px rgba(204,34,34,0.8);
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.game-heart.dead {
+  color: #2a1010;
+  text-shadow: none;
+  animation: none;
+}
+
+/* ===========================
+   OYUN EKRANI — SCROLL ALANI
+   =========================== */
+#game-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 2.2rem 1.2rem 3.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,162,39,0.25) transparent;
+}
+
+#game-scroll-area::-webkit-scrollbar         { width: 4px; }
+#game-scroll-area::-webkit-scrollbar-track   { background: transparent; }
+#game-scroll-area::-webkit-scrollbar-thumb   { background: rgba(201,162,39,0.3); border-radius: 2px; }
+
+#game-content {
+  max-width: 680px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* ===========================
+   OYUN EKRANI — METİN
+   =========================== */
+#game-scene-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.28em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201,162,39,0.18);
+  padding-bottom: 0.55rem;
+}
+
+#game-narration {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.88;
+  color: var(--cream);
+}
+
+.game-hl {
+  color: var(--gold-light);
+  font-style: normal;
+  text-shadow: 0 0 10px rgba(240,208,96,0.35);
+}
+
+/* ===========================
+   OYUN EKRANI — SEÇİMLER
+   =========================== */
+#game-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.game-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.95rem 1.25rem;
+  background: rgba(201,162,39,0.05);
+  border: 1px solid rgba(201,162,39,0.22);
+  border-radius: 4px;
+  color: var(--cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  cursor: pointer;
+  user-select: none;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), transform 0.15s ease;
+}
+
+.game-choice-btn:hover {
+  background: rgba(201,162,39,0.12);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  transform: translateX(5px);
+}
+
+.game-choice-btn:active { transform: translateX(2px) scale(0.99); }
+
+.game-choice-icon {
+  font-size: 1.15em;
+  flex-shrink: 0;
+  width: 1.4em;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.game-choice-text { flex: 1; }
+
+/* ===========================
+   OYUN EKRANI — SONUÇ
+   =========================== */
+.game-consequence {
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.28);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.game-consequence-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-light);
+  text-shadow: 0 0 8px rgba(240,208,96,0.6);
+}
+
+.game-consequence p {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.05rem;
+  color: var(--cream-dim);
+  line-height: 1.72;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ===========================
+   OYUN EKRANI — GENEL BUTONLAR
+   =========================== */
+.game-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.28);
+  border-radius: 3px;
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.09em;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), transform 0.15s ease;
+}
+
+.game-btn:hover {
+  background: rgba(201,162,39,0.14);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+.game-btn:active { transform: translateY(0) scale(0.99); }
+
+.game-btn-primary {
+  border-color: var(--gold);
+  background: rgba(201,162,39,0.10);
+  font-weight: 600;
+}
+
+.game-btn-primary:hover {
+  background: rgba(201,162,39,0.22);
+  box-shadow: 0 0 18px rgba(201,162,39,0.2);
+}
+
+.game-btn-danger {
+  border-color: rgba(204,34,34,0.45);
+  background: rgba(139,0,0,0.10);
+  color: #ff7070;
+}
+
+.game-btn-danger:hover {
+  background: rgba(139,0,0,0.20);
+  border-color: var(--red-bright);
+  color: #ff9090;
+}
+
+.game-btn-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ===========================
+   OYUN EKRANI — BÖLÜM/OYUN SONU
+   =========================== */
+.game-ending-card {
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.28);
+  border-radius: 4px;
+  padding: 1.3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.game-ending-label {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.game-ending-desc {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.1rem;
+  color: var(--cream-dim);
+  font-style: italic;
+}
+
+/* ===========================
+   OYUN EKRANI — RESPONSIVE
+   =========================== */
+@media (max-width: 480px) {
+  #game-header         { padding: 0 1rem; }
+  #game-chapter-label  { font-size: 0.75rem; }
+  #game-scroll-area    { padding: 1.5rem 0.9rem 2.5rem; }
+  #game-narration      { font-size: 1.05rem; }
+  .game-choice-btn     { font-size: 0.97rem; padding: 0.85rem 1rem; }
+}
